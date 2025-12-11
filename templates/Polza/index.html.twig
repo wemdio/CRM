@@ -1,0 +1,899 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Список проектов{% endblock %}
+
+{% block body %}
+<style>
+    .page-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Header Actions */
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .page-title {
+        color: var(--text-dark);
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .btn-new-project {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-new-project:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+        text-decoration: none;
+        color: white;
+    }
+    
+    /* Flash Messages */
+    .flash-message {
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 8px;
+        background: #d1edff;
+        color: #0c5460;
+        border: 1px solid #b8daff;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: var(--shadow);
+    }
+    
+    .flash-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    
+    /* Статистика проектов */
+    .projects-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: var(--text-light);
+        font-weight: 500;
+    }
+    
+    .stat-card.total-amount .stat-number {
+        color: #2e7d32;
+    }
+    
+    /* Horizontal Projects List */
+    .projects-list {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem; /* Увеличил с 1.5rem до 3rem */
+        margin-top: 1rem;
+    }
+
+    .project-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        min-height: 200px;
+        margin-bottom: 2rem; /* Добавил дополнительный отступ снизу */
+    }
+    
+    .project-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
+    
+    /* Project Header */
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+    
+    .project-name {
+        flex: 1;
+    }
+    
+    .project-name a {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        display: block;
+        line-height: 1.3;
+    }
+    
+    .project-name a:hover {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+    
+    .project-status {
+        color: white;
+        padding: 0.375rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    
+    /* Новые цвета для статусов */
+    .status-новый {
+        background: linear-gradient(135deg, #ffc107, #ff8f00);
+    }
+    
+    .status-повторный {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+    }
+    
+    .status-завершённый {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+    }
+    
+    /* Для совместимости со старыми статусами */
+    .status-active {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+    }
+    
+    .status-pending {
+        background: linear-gradient(135deg, #ff9800, #f57c00);
+    }
+    
+    .status-completed {
+        background: linear-gradient(135deg, #f44336, #d32f2f);
+    }
+    
+    .status-cancelled {
+        background: linear-gradient(135deg, #9e9e9e, #757575);
+    }
+    
+    .project-description {
+        color: var(--text-light);
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        max-height: 3em;
+        overflow: hidden;
+        font-size: 1.05rem;
+    }
+    
+    /* Horizontal Details Grid */
+    .project-details-horizontal {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        align-items: start;
+    }
+    
+    .detail-card {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary-color);
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detail-card.team-card {
+        border-left-color: var(--success-color);
+    }
+    
+    .detail-card.kpi-card {
+        border-left-color: #ff6b6b;
+    }
+    
+    .detail-card.finance-card {
+        border-left-color: #2e7d32;
+    }
+    
+    .detail-card.dates-card {
+        border-left-color: #9c27b0;
+    }
+    
+    .detail-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .detail-content {
+        font-size: 1.05rem;
+        color: var(--text-dark);
+        line-height: 1.4;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .amount-value {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #2e7d32;
+        text-align: center;
+    }
+    
+    .date-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .date-item:last-child {
+        border-bottom: none;
+    }
+    
+    .date-label {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .date-value {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    
+    /* KPI Section */
+    .kpi-content {
+        background: white;
+        padding: 0.75rem;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        max-height: 80px;
+        overflow: hidden;
+    }
+    
+    .kpi-text {
+        font-size: 1.05rem;
+        color: var(--text-dark);
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Team Section */
+    .team-members {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-height: 100px;
+        overflow-y: auto;
+        padding-right: 5px;
+    }
+    
+    .team-members::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .team-members::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 2px;
+    }
+    
+    .team-members::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 2px;
+    }
+    
+    .team-member {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        min-height: 40px;
+    }
+    
+    .member-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.8rem;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+    
+    .member-avatar.mentor {
+        background: linear-gradient(135deg, var(--success-color), #00b4d8);
+    }
+    
+    .member-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .member-name {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .member-role {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .no-team {
+        text-align: center;
+        color: var(--text-light);
+        font-style: italic;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 6px;
+        border: 1px dashed #e9ecef;
+        font-size: 0.9rem;
+    }
+    
+    /* Project Actions */
+    .project-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .project-link {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .project-link:hover {
+        background: var(--secondary-color);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+    }
+    
+    /* Empty State */
+    .no-projects {
+        text-align: center;
+        padding: 4rem 2rem;
+        border: 2px dashed var(--border-color);
+        border-radius: 12px;
+        margin: 2rem 0;
+        background: var(--bg-white);
+    }
+    
+    .no-projects-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .no-projects h3 {
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .no-projects p {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Status Groups - ИЗМЕНЕНИЯ ЗДЕСЬ */
+    .status-group {
+        margin-bottom: 4rem
+    }
+    
+    .status-group-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2rem; /* Увеличил с 1rem до 2rem */
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .project-details-horizontal {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .detail-card {
+            min-height: 140px;
+        }
+        
+        .projects-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .header-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            text-align: center;
+        }
+        
+        .project-details-horizontal {
+            grid-template-columns: 1fr;
+        }
+        
+        .project-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .project-status {
+            align-self: flex-start;
+        }
+        
+        .project-actions {
+            justify-content: center;
+        }
+        
+        .detail-card {
+            min-height: auto;
+        }
+        
+        .projects-stats {
+            grid-template-columns: 1fr;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+        
+        .status-group-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<div class="page-container">
+    <div class="header-actions">
+        <h1 class="page-title">Список проектов</h1>
+        <a href="{{ path('app_project_new') }}" class="btn-new-project">
+            <span>➕</span>
+            <span>Создать новый проект</span>
+        </a>
+    </div>
+    
+    {# Flash сообщения #}
+    {% for message in app.flashes('success') %}
+        <div class="flash-message">
+            <span>✅</span>
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="flash-message flash-error">
+            <span>❌</span>
+            <span>{{ message }}</span>
+        </div>
+    {% endfor %}
+    
+    {# Статистика проектов #}
+    <div class="projects-stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ projects|length }}</div>
+            <div class="stat-label">Всего проектов</div>
+        </div>
+        <div class="stat-card total-amount">
+            <div class="stat-number">
+                {% set total_amount = 0 %}
+                {% for project in projects %}
+                    {% if project.amount %}
+                        {% set total_amount = total_amount + project.amount %}
+                    {% endif %}
+                {% endfor %}
+                {{ total_amount|number_format(0, ',', ' ') }} ₽
+            </div>
+            <div class="stat-label">Общая сумма</div>
+        </div>
+    </div>
+    
+    {% if projects is not empty %}
+        {# Группируем проекты по статусу #}
+        {% set active_projects = projects|filter(p => p.status != 'Завершённый') %}
+        {% set completed_projects = projects|filter(p => p.status == 'Завершённый') %}
+        
+        <div class="projects-list">
+            {# Активные проекты (Новые и Повторные) #}
+            {% if active_projects is not empty %}
+                <div class="status-group">
+                    <h2 class="status-group-title">Активные проекты</h2>
+                    {% for project in active_projects %}
+                        <div class="project-card">
+                            {# Заголовок проекта #}
+                            <div class="project-header">
+                                <div class="project-name">
+                                    <a href="{{ path('app_project_show', {'id': project.id}) }}">
+                                        {{ project.name }}
+                                    </a>
+                                </div>
+                                <span class="project-status status-{{ project.status|lower }}">
+                                    {{ project.status }}
+                                </span>
+                            </div>
+                            
+                            {# Описание проекта #}
+                            <p class="project-description">
+                                {{ project.description|slice(0, 150) }}{% if project.description|length > 150 %}...{% endif %}
+                            </p>
+                            
+                            {# Горизонтальная сетка с данными #}
+                            <div class="project-details-horizontal">
+                                {# Финансы #}
+                                <div class="detail-card finance-card">
+                                    <div class="detail-title">
+                                        <span>💰</span>
+                                        <span>Сумма услуг</span>
+                                    </div>
+                                    <div class="detail-content amount-value">
+                                        {{ project.amount ? project.amount|number_format(0, ',', ' ') ~ ' ₽' : 'Не указана' }}
+                                    </div>
+                                </div>
+                                
+                                {# Даты #}
+                                <div class="detail-card dates-card">
+                                    <div class="detail-title">
+                                        <span>📅</span>
+                                        <span>Даты проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="date-item">
+                                            <span class="date-label">Договор:</span>
+                                            <span class="date-value">
+                                                {% if project.contract %}
+                                                    {{ project.contract }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="date-item">
+                                            <span class="date-label">Запуск:</span>
+                                            <span class="date-value">
+                                                {% if project.launch %}
+                                                    {{ project.launch }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="date-item">
+                                            <span class="date-label">Дедлайн:</span>
+                                            <span class="date-value">
+                                                {% if project.deadline %}
+                                                    {{ project.deadline }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {# KPI #}
+                                <div class="detail-card kpi-card">
+                                    <div class="detail-title">
+                                        <span>🎯</span>
+                                        <span>KPI проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="kpi-content">
+                                            <span class="kpi-text">
+                                                {{ project.kpi ? project.kpi|slice(0, 80) ~ (project.kpi|length > 80 ? '...' : '') : 'KPI не установлены' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {# Команда #}
+                                <div class="detail-card team-card">
+                                    <div class="detail-title">
+                                        <span>👥</span>
+                                        <span>Команда проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="team-members">
+                                            {% if project.specialist %}
+                                                <div class="team-member">
+                                                    <div class="member-avatar">
+                                                        {{ project.specialist|slice(0, 1)|upper }}
+                                                    </div>
+                                                    <div class="member-info">
+                                                        <div class="member-name">{{ project.specialist }}</div>
+                                                        <div class="member-role">Специалист</div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if project.mentor %}
+                                                <div class="team-member">
+                                                    <div class="member-avatar mentor">
+                                                        {{ project.mentor|slice(0, 1)|upper }}
+                                                    </div>
+                                                    <div class="member-info">
+                                                        <div class="member-name">{{ project.mentor }}</div>
+                                                        <div class="member-role">Наставник</div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if not project.specialist and not project.mentor %}
+                                                <div class="no-team">
+                                                    Команда не назначена
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {# Действия #}
+                            <div class="project-actions">
+                                <a href="{{ path('app_project_show', {'id': project.id}) }}" class="project-link">
+                                    <span>🔍</span>
+                                    <span>Подробнее о проекте</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {# Завершённые проекты #}
+            {% if completed_projects is not empty %}
+                <div class="status-group">
+                    <h2 class="status-group-title">Завершённые проекты</h2>
+                    {% for project in completed_projects %}
+                        <div class="project-card">
+                            {# Заголовок проекта #}
+                            <div class="project-header">
+                                <div class="project-name">
+                                    <a href="{{ path('app_project_show', {'id': project.id}) }}">
+                                        {{ project.name }}
+                                    </a>
+                                </div>
+                                <span class="project-status status-{{ project.status|lower }}">
+                                    {{ project.status }}
+                                </span>
+                            </div>
+                            
+                            {# Описание проекта #}
+                            <p class="project-description">
+                                {{ project.description|slice(0, 150) }}{% if project.description|length > 150 %}...{% endif %}
+                            </p>
+                            
+                            {# Горизонтальная сетка с данными #}
+                            <div class="project-details-horizontal">
+                                {# Финансы #}
+                                <div class="detail-card finance-card">
+                                    <div class="detail-title">
+                                        <span>💰</span>
+                                        <span>Сумма услуг</span>
+                                    </div>
+                                    <div class="detail-content amount-value">
+                                        {{ project.amount ? project.amount|number_format(0, ',', ' ') ~ ' ₽' : 'Не указана' }}
+                                    </div>
+                                </div>
+                                
+                                {# Даты #}
+                                <div class="detail-card dates-card">
+                                    <div class="detail-title">
+                                        <span>📅</span>
+                                        <span>Даты проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="date-item">
+                                            <span class="date-label">Договор:</span>
+                                            <span class="date-value">
+                                                {% if project.contract %}
+                                                    {{ project.contract }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="date-item">
+                                            <span class="date-label">Запуск:</span>
+                                            <span class="date-value">
+                                                {% if project.launch %}
+                                                    {{ project.launch }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                        <div class="date-item">
+                                            <span class="date-label">Дедлайн:</span>
+                                            <span class="date-value">
+                                                {% if project.deadline %}
+                                                    {{ project.deadline }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {# KPI #}
+                                <div class="detail-card kpi-card">
+                                    <div class="detail-title">
+                                        <span>🎯</span>
+                                        <span>KPI проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="kpi-content">
+                                            <span class="kpi-text">
+                                                {{ project.kpi ? project.kpi|slice(0, 80) ~ (project.kpi|length > 80 ? '...' : '') : 'KPI не установлены' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {# Команда #}
+                                <div class="detail-card team-card">
+                                    <div class="detail-title">
+                                        <span>👥</span>
+                                        <span>Команда проекта</span>
+                                    </div>
+                                    <div class="detail-content">
+                                        <div class="team-members">
+                                            {% if project.specialist %}
+                                                <div class="team-member">
+                                                    <div class="member-avatar">
+                                                        {{ project.specialist|slice(0, 1)|upper }}
+                                                    </div>
+                                                    <div class="member-info">
+                                                        <div class="member-name">{{ project.specialist }}</div>
+                                                        <div class="member-role">Специалист</div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if project.mentor %}
+                                                <div class="team-member">
+                                                    <div class="member-avatar mentor">
+                                                        {{ project.mentor|slice(0, 1)|upper }}
+                                                    </div>
+                                                    <div class="member-info">
+                                                        <div class="member-name">{{ project.mentor }}</div>
+                                                        <div class="member-role">Наставник</div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {% if not project.specialist and not project.mentor %}
+                                                <div class="no-team">
+                                                    Команда не назначена
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {# Действия #}
+                            <div class="project-actions">
+                                <a href="{{ path('app_project_show', {'id': project.id}) }}" class="project-link">
+                                    <span>🔍</span>
+                                    <span>Подробнее о проекте</span>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="no-projects">
+            <div class="no-projects-icon">📋</div>
+            <h3>Проектов пока нет</h3>
+            <p>Создайте первый проект, нажав на кнопку ниже</p>
+            <a href="{{ path('app_project_new') }}" class="btn-new-project" style="margin-top: 1rem;">
+                ➕ Создать первый проект
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
