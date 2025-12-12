@@ -1,5 +1,8 @@
 FROM dunglas/frankenphp
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 RUN install-php-extensions \
     pdo_pgsql \
     intl \
@@ -18,4 +21,3 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-dev --optimize-autoloader
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-
