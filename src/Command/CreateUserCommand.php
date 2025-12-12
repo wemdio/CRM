@@ -25,6 +25,12 @@ class CreateUserCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['name' => 'admin']);
+        if ($existingUser) {
+            $output->writeln('User admin already exists.');
+            return Command::SUCCESS;
+        }
+
         $user = new User();
         $user->setName('admin');
         $user->setPosition('Руководитель');

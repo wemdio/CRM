@@ -70,10 +70,15 @@ public function index(): Response
     }
 
     #[Route('/', name: 'app_homepage')]
-    public function homepage(): Response
-    {
+public function homepage(): Response
+{
+    
+    if ($this->getUser()) {
         return $this->redirectToRoute('app_projects');
     }
+    
+    return $this->render('polza/homepage.html.twig');
+}
 
 }
 
