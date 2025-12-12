@@ -7,7 +7,8 @@ RUN install-php-extensions \
     pdo_pgsql \
     intl \
     zip \
-    opcache
+    opcache \
+    http
 
 COPY . /app
 WORKDIR /app
