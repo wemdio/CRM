@@ -45,8 +45,7 @@
         "symfony/web-link": "7.3.*",
         "symfony/yaml": "7.3.*",
         "twig/extra-bundle": "^2.12|^3.22.1",
-        "twig/twig": "^2.12|^3.22",
-        "ext-http": "*"
+        "twig/twig": "^2.12|^3.22"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.4.4",
