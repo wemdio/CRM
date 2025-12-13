@@ -6,8 +6,8 @@ services:
     environment:
       - SERVER_NAME=:80
       - DATABASE_URL=postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
-      - APP_ENV=dev
-      - APP_DEBUG=1
+      - APP_ENV=prod
+      - APP_DEBUG=0
       - APP_SECRET=ChangeMe123!
     depends_on:
       - database
