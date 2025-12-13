@@ -16,8 +16,8 @@ WORKDIR /app
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Install composer dependencies (update to sync lock file, no scripts to avoid build-time errors)
+# Install ALL composer dependencies (including dev) to support APP_ENV=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer update --no-dev --optimize-autoloader --no-scripts
+RUN composer update --optimize-autoloader --no-scripts
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
