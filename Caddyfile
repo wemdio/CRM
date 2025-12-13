@@ -13,6 +13,10 @@
 		format console
 	}
 
+	@healthz {
+		path /healthz
+	}
+
 	# Set the root to the public directory
 	root * /app/public
 
@@ -20,7 +24,8 @@
 	encode zstd gzip
 
 	# Simple healthcheck endpoint (no PHP)
-	respond /healthz "ok" 200
+	header @healthz Content-Type "text/plain; charset=utf-8"
+	respond @healthz "ok" 200
 
 	# Enable PHP server
 	php_server
