@@ -4,7 +4,9 @@
 	order php_server before file_server
 }
 
-:{$PORT:80} {
+# Timeweb may route traffic to different internal ports depending on app type.
+# Listen on a few common ones to avoid "white screen" due to port mismatch.
+:80, :8080, :8000, :3000 {
 	# Log every request to stdout so we can see if Timeweb actually routes traffic here
 	log {
 		output stdout
