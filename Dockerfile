@@ -7,8 +7,7 @@ RUN install-php-extensions \
     pdo_pgsql \
     intl \
     zip \
-    opcache \
-    http
+    opcache
 
 COPY . /app
 WORKDIR /app
@@ -17,8 +16,8 @@ WORKDIR /app
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Install composer dependencies (optimized for prod)
+# Install composer dependencies (update to sync lock file)
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader
+RUN composer update --no-dev --optimize-autoloader
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
