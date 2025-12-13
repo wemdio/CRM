@@ -6,7 +6,7 @@
 
 :80 {
 	# Set the root to the public directory
-	root * public/
+	root * /app/public
 	
 	# Enable compression
 	encode zstd gzip
