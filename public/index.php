@@ -1,12 +1,5 @@
 <?php
 
-// DIE HARD DEBUG
-echo "<h1>PHP IS WORKING</h1>";
-echo "<pre>";
-print_r($_SERVER);
-echo "</pre>";
-die();
-
 use App\Kernel;
 
 require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
