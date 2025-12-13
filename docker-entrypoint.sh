@@ -8,8 +8,9 @@ until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
   sleep 2
 done
 
-echo "Running migrations..."
-php bin/console doctrine:migrations:migrate --no-interaction
+echo "Updating database schema..."
+# Using schema:update instead of migrations because migration history seems broken (missing table creation)
+php bin/console doctrine:schema:update --force --complete --no-interaction
 
 # Create admin user if not exists
 echo "Creating admin user..."
