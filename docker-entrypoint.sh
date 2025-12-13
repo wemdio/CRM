@@ -1,6 +1,12 @@
 #!/bin/sh
 set -e
 
+# Print minimal env diagnostics (avoid secrets)
+echo "APP_ENV=${APP_ENV:-}"
+echo "APP_DEBUG=${APP_DEBUG:-}"
+echo "PORT=${PORT:-}"
+echo "SERVER_NAME=${SERVER_NAME:-}"
+
 # Ensure writable directories for Symfony + SQLite (Timeweb filesystem can be restrictive)
 mkdir -p var public/build
 chmod -R 777 var public/build || true
