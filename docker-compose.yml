@@ -5,21 +5,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - SERVER_NAME=:80
-      - DATABASE_URL=postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
-      - APP_ENV=prod
-      - APP_DEBUG=0
+      - DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+      - APP_ENV=dev
+      - APP_DEBUG=1
       - APP_SECRET=ChangeMe123!
-    depends_on:
-      - database
-
-  database:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: app
-      POSTGRES_PASSWORD: "!ChangeMe!"
-      POSTGRES_USER: app
-    healthcheck:
-      test: ["CMD", "pg_isready", "-d", "app", "-U", "app"]
-      timeout: 5s
-      retries: 5
-      start_period: 60s

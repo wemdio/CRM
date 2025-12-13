@@ -1,15 +1,14 @@
 #!/bin/sh
 set -e
 
-# Run migrations (with retry loop)
-echo "Waiting for database to be ready..."
-until php bin/console dbal:run-sql "SELECT 1" > /dev/null 2>&1; do
-  echo "Database is not ready, sleeping..."
-  sleep 2
-done
+# Create database file if it doesn't exist (touching it to ensure permissions)
+mkdir -p var
+touch var/data.db
+chmod 777 var/data.db
+chmod 777 var
 
 echo "Updating database schema..."
-# Using schema:update instead of migrations because migration history seems broken (missing table creation)
+# Schema update works fine with SQLite
 php bin/console doctrine:schema:update --force --complete --no-interaction
 
 # Create admin user if not exists
