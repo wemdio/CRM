@@ -13,21 +13,25 @@
 		format console
 	}
 
-	@healthz {
-		path /healthz
+	# Marker header to confirm requests are hitting THIS container config (not some edge)
+	header X-App-Version "da80910"
+
+	# Healthcheck (must be handled before php_server)
+	handle_path /healthz* {
+		header Content-Type "text/plain; charset=utf-8"
+		respond "ok" 200
 	}
 
-	# Set the root to the public directory
-	root * /app/public
+	# Default app handler
+	handle {
+		# Set the root to the public directory
+		root * /app/public
 
-	# Enable compression
-	encode zstd gzip
+		# Enable compression
+		encode zstd gzip
 
-	# Simple healthcheck endpoint (no PHP)
-	header @healthz Content-Type "text/plain; charset=utf-8"
-	respond @healthz "ok" 200
-
-	# Enable PHP server
-	php_server
+		# Enable PHP server
+		php_server
+	}
 }
 
