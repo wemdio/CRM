@@ -10,7 +10,24 @@
 	
 	# Enable compression
 	encode zstd gzip
+
+	# Simple healthcheck endpoint (no PHP)
+	respond /healthz "ok" 200
 	
+	# Enable PHP server
+	php_server
+}
+
+:8080 {
+	# Set the root to the public directory
+	root * /app/public
+
+	# Enable compression
+	encode zstd gzip
+
+	# Simple healthcheck endpoint (no PHP)
+	respond /healthz "ok" 200
+
 	# Enable PHP server
 	php_server
 }
