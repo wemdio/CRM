@@ -70,10 +70,11 @@ public function index(): Response
     }
 
     #[Route('/', name: 'app_homepage')]
-public function homepage(): Response
-{
+    public function homepage(): Response
+    {
+        // Demo-safe: homepage template doesn't exist; always redirect to projects list UI
         return $this->redirectToRoute('app_projects');
-}
+    }
 
 }
 

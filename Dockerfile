@@ -4,7 +4,6 @@ FROM dunglas/frankenphp
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN install-php-extensions \
-    pdo_pgsql \
     pdo_sqlite \
     intl \
     zip \
@@ -22,6 +21,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Install ALL composer dependencies (including dev) to support APP_ENV=dev
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer update --optimize-autoloader --no-scripts
+RUN composer install --no-interaction --no-scripts --optimize-autoloader
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

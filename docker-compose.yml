@@ -5,7 +5,6 @@ services:
       dockerfile: Dockerfile
     environment:
       - SERVER_NAME=:80
+      - APP_ENV=prod
+      - APP_DEBUG=0
       - DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
-      - APP_ENV=dev
-      - APP_DEBUG=1
-      - APP_SECRET=ChangeMe123!
