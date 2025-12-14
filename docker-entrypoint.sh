@@ -7,6 +7,13 @@ echo "APP_DEBUG=${APP_DEBUG:-}"
 echo "PORT=${PORT:-}"
 echo "SERVER_NAME=${SERVER_NAME:-}"
 
+# Ensure importmap vendor assets exist (they are gitignored, must exist in container).
+# If missing, try to install them at startup (best-effort).
+if [ ! -f assets/vendor/@hotwired/stimulus/stimulus.index.js ]; then
+  echo "Importmap vendor assets missing; running importmap:install..."
+  APP_ENV="${APP_ENV:-prod}" APP_DEBUG="${APP_DEBUG:-0}" php bin/console importmap:install --no-interaction || true
+fi
+
 # If an old debug front controller is present (from previous experiments or cached images),
 # replace it with the standard Symfony Runtime front controller.
 if [ -f public/index.php ] && grep -q "SYSTEM CHECK: PHP IS WORKING" public/index.php; then
