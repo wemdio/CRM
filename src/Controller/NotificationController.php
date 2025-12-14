@@ -60,6 +60,6 @@ class NotificationController extends AbstractController
         $this->notificationService->markAllAsRead($this->getUser());
         
         $this->addFlash('success', 'Все уведомления прочитаны');
-        return $this->redirectToRoute('app_tools');
+        return $this->redirectToRoute('app_projects');
     }
 }

@@ -16,15 +16,9 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                default_target_path: app_tools
-            logout:
-                path: app_logout
-                target: app_login
+            custom_authenticators:
+                - App\Security\DemoAuthenticator
 
     access_control:
         - { path: ^/admin, roles: Руководитель }
-        - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }

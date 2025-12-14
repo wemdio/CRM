@@ -216,25 +216,10 @@
                     </div>
                     
                     <nav class="main-nav">
-                        <a href="{{ path('app_tools') }}" class="nav-link">
-                            <span>🛠️</span>
-                            <span>Инструменты</span>
-                        </a>
                         <a href="{{ path('app_projects') }}" class="nav-link">
                             <span>📋</span>
                             <span>Проекты</span>
                         </a>
-                        {% if app.user %}
-                            <a href="{{ path('app_logout') }}" class="nav-link">
-                                <span>🚪</span>
-                                <span>Выйти</span>
-                            </a>
-                        {% else %}
-                            <a href="{{ path('app_login') }}" class="nav-link">
-                                <span>🔑</span>
-                                <span>Войти</span>
-                            </a>
-                        {% endif %}
                     </nav>
                 </div>
             </header>
