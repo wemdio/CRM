@@ -28,7 +28,8 @@ public function index(): Response
 {
     $projects = $this->projectService->getAllProjects();
     
-    return $this->render('polza/index.html.twig', [
+    // Linux filesystems are case-sensitive; templates folder is "Polza/".
+    return $this->render('Polza/index.html.twig', [
         'projects' => $projects,
     ]);
 }
@@ -47,7 +48,7 @@ public function index(): Response
             return $this->redirectToRoute('app_project_show', ['id' => $project->getId()]);
         }
 
-        return $this->render('polza/project_new.html.twig', [
+        return $this->render('Polza/project_new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -63,7 +64,7 @@ public function index(): Response
             return $this->redirectToRoute('app_project_show', ['id' => $project->getId()]);
         }
 
-        return $this->render('polza/project_show.html.twig', [
+        return $this->render('Polza/project_show.html.twig', [
             'project' => $project,
             'form' => $form->createView(),
         ]);
