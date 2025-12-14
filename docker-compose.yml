@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      # Timeweb reserves host ports 80/443 for its own proxy (Nginx).
+      # Expose the web service on any other host port; Timeweb will proxy domain -> this port.
+      - "9000:80"
     environment:
       - SERVER_NAME=:80
       - APP_ENV=prod
